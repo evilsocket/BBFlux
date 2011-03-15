@@ -1,4 +1,3 @@
-import os.path
 # -*- coding: utf-8 -*-
 #!/usr/bin/python
 # This file is part of BlueBox (BackBox XFCE -> FluxBox Menu Automatic Update Daemon).
