@@ -61,7 +61,7 @@ class Menu:
       fluxboxmenu += '%s[submenu] (%s)\n' % ( '\t' * tabs, self.label )
       
     for program in self.programs:
-      command = program.command.replace( 'sh -c', 'x-terminal-emulator -e' )
+      command = program.command.replace( 'sh -c', 'xterm -e' )
       name    = program.name.replace('(','').replace(')','')
       # icon  = '/usr/share/pixmaps/' + program.icon + '.png' if '/' not in program.icon and program.icon != '' else program.icon
       
