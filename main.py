@@ -67,8 +67,6 @@ if __name__ == "__main__":
       print "@ Removing empty items ..."
       menu.removeEmptyItems()
 
-      # menu.debug()
-
       print "@ Converting to fluxbox standards ..."
       fd = codecs.open( BBFlux.FLUXBOX_MENU, 'w+', 'UTF-8' )
       fd.write( menu.toFluxBox() )
