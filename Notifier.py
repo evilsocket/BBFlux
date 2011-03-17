@@ -26,7 +26,7 @@ class Notifier:
 
     try:
       import pynotify
-      if pynotify.init("BlueBox - BackBox Linux Fluxbox Menu Auto Generation Daemon"):
+      if pynotify.init("BBFlux - BackBox Linux Fluxbox Menu Auto Generation Daemon"):
         self.libnotify = True
     except:
       pass
@@ -34,7 +34,7 @@ class Notifier:
   def notify( self, message ):
     if self.libnotify:
       import pynotify
-      notification = pynotify.Notification( "BlueBox Notification", message )
+      notification = pynotify.Notification( "BBFlux Notification", message )
       notification.show()
 
   @classmethod
