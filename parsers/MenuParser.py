@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# This file is part of BlueBox (BackBox XFCE -> FluxBox Menu Automatic Update Daemon).
+# This file is part of BBFlux (BackBox XFCE -> FluxBox Menu Automatic Update Daemon).
 #
 # Copyright(c) 2010-2011 Simone Margaritelli
 # evilsocket@gmail.com - evilsocket@backbox.org
@@ -34,7 +34,10 @@ class MenuParser:
     self.xmldoc = minidom.parse( self.filename )
     self.root   = Menu()
 
-  def __getLabelFromDirectoryFile( self, directory ):
+  def __getDataFromDirectoryFile( self, directory ):
+    name  = ""
+    icon  = ""
+    
     fd    = codecs.open( "/usr/share/desktop-directories/" + directory, "r", "utf-8" )
     lines = fd.readlines()
     fd.close()
@@ -43,9 +46,13 @@ class MenuParser:
       line = line.strip()
       m    = re.match( '^Name\s*=\s*(.+)$', line )
       if m:
-        return m.group(1)
+        name = m.group(1)
+      else:
+        m = re.match( '^Icon\s*=\s*(.+)$', line )
+        if m:
+          icon = m.group(1)
 
-    return None
+    return ( name, icon )
 
   def __getChildData( self, node, name ):
     nodes = node.childNodes
@@ -65,8 +72,9 @@ class MenuParser:
         menu.name = name
 
         if directory is not None:
-          menu.label = self.__getLabelFromDirectoryFile( directory )
-          menu.setFather(root)
+          ( label, icon ) = self.__getDataFromDirectoryFile( directory )
+          menu.label = label
+          menu.icon  = icon
           root.addSubMenu(menu)
 
         self.__recurse( node, menu )
@@ -82,7 +90,9 @@ class MenuParser:
         self.root.name = name
 
         if directory is not None:
-          self.root.label = self.__getLabelFromDirectoryFile( directory )
+          ( label, icon ) = self.__getDataFromDirectoryFile( directory )
+          self.root.label = label
+          self.root.icon  = icon
 
         self.__recurse( node, self.root )
 

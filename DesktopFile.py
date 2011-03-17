@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# This file is part of BlueBox (BackBox XFCE -> FluxBox Menu Automatic Update Daemon).
+# This file is part of BBFlux (BackBox XFCE -> FluxBox Menu Automatic Update Daemon).
 #
 # Copyright(c) 2010-2011 Simone Margaritelli
 # evilsocket@gmail.com - evilsocket@backbox.org

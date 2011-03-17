@@ -18,27 +18,44 @@
 # program. If not, go to http://www.gnu.org/licenses/gpl.html
 # or write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-class Notifier:
+import os
+import fnmatch
+
+class IconParser:
   __instance = None
-
+  
   def __init__(self):
-    self.libnotify = False
+    self.cache = {}
 
-    try:
-      import pynotify
-      if pynotify.init("BlueBox - BackBox Linux Fluxbox Menu Auto Generation Daemon"):
-        self.libnotify = True
-    except:
-      pass
+  def __findIcon( self, path, pattern ):
+    for root, dirnames, filenames in os.walk( path ):
+      for filename in fnmatch.filter( filenames,  pattern ):
+        return os.path.join(root, filename)
 
-  def notify( self, message ):
-    if self.libnotify:
-      import pynotify
-      notification = pynotify.Notification( "BlueBox Notification", message )
-      notification.show()
+    return None
+
+  def getIconByName( self, name ):
+    name = name.replace( '.png', '' )
+    
+    if name is None or name == '':
+      return None
+    if name[0] == '/':
+      return name
+    elif self.cache.has_key(name):
+      return self.cache[name]
+    else:
+      if os.path.exists( '/usr/share/pixmaps/' + name + '.png' ):
+        self.cache[name] = '/usr/share/pixmaps/' + name + '.png'
+        return '/usr/share/pixmaps/' + name + '.png'
+      else:
+        icon = self.__findIcon( '/usr/share/icons', name + '.png' )
+        if icon is not None:
+          self.cache[name] = icon
+
+        return icon
 
   @classmethod
   def getInstance(cls):
     if cls.__instance is None:
-      cls.__instance = Notifier()
+      cls.__instance = IconParser()
     return cls.__instance
