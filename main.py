@@ -25,6 +25,7 @@ import codecs
 import signal
 import os
 import sys
+import atexit
 
 from glob                  import glob
 from time                  import sleep
@@ -39,10 +40,16 @@ class BBFlux:
   XFCE_MENU       = "/etc/xdg/xdg-backbox/menus/backbox-applications.menu"
   DESKTOP_PATTERN = "/usr/share/applications/*.desktop"
   WAIT_DELAY      = 3
+  PID_FILE        = os.path.expanduser( "~/.bbflux.pid" )
 
-def exit_signal_handler( sig, func ):
+def exit_signal_handler( sig, func ): 
+  exit(1)
+
+def exit_handler():
+  if os.path.exists( BBFlux.PID_FILE ):
+    os.unlink( BBFlux.PID_FILE )
+    
   syslog.syslog( 'BBFlux Stopped' )
-  quit()
 
 if __name__ == "__main__":
   try:
@@ -75,12 +82,25 @@ if __name__ == "__main__":
       print "@ Menu updated ."
       
     else:
+
+      # check if there's another live instance running
+      if os.path.exists( BBFlux.PID_FILE ):
+        pid = file( BBFlux.PID_FILE, 'r' ).read().strip()
+        if( os.path.exists( '/proc/' + pid ) ):
+          print "@ BBFlux is already running ."
+          quit()
+
+      atexit.register(exit_handler)
         
       signal.signal( signal.SIGTERM, exit_signal_handler )
 
+      pid = open( BBFlux.PID_FILE, 'w+' )
+      pid.write( str(os.getpid()) )
+      pid.close()
+
       syslog.openlog( "BBFlux" )
 
-      syslog.syslog( 'BBFlux Started' )
+      syslog.syslog( 'BBFlux Started with pid file %s' % BBFlux.PID_FILE )
 
       first_run      = not os.path.exists( BBFlux.FIRST_RUN_FILE )
       first_run_done = False
