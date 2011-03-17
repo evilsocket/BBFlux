@@ -63,10 +63,13 @@ if __name__ == "__main__":
           menu.findOwnerAndAdd(desktop)
 
         desktopparser.reset()
-
+      
       print "@ Removing empty items ..."
       menu.removeEmptyItems()
 
+      # menu.debug()
+
+      print "@ Converting to fluxbox standards ..."
       fd = codecs.open( BBFlux.FLUXBOX_MENU, 'w+', 'UTF-8' )
       fd.write( menu.toFluxBox() )
       fd.close()

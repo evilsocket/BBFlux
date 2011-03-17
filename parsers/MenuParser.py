@@ -75,6 +75,7 @@ class MenuParser:
           ( label, icon ) = self.__getDataFromDirectoryFile( directory )
           menu.label = label
           menu.icon  = icon
+          menu.setFather(root)
           root.addSubMenu(menu)
 
         self.__recurse( node, menu )

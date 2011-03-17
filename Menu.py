@@ -37,11 +37,16 @@ class Menu:
     self.submenus.append( menu )
 
   def findOwnerAndAdd( self, desktop ):
+
     if self.name in desktop.categories:
       self.programs.append( desktop )
       return True
     # special case, tnx to Raffaele messed up brain -.-
     elif self.father != None and self.father.name == 'Services' and len(desktop.categories) > 0 and self.name in desktop.categories[0]:
+      self.programs.append( desktop )
+      return True
+    # same as before
+    elif self.name == 'Hacking' and desktop.categories[0] == u'BackBox':
       self.programs.append( desktop )
       return True
     else:
