@@ -98,10 +98,10 @@ class Menu:
       fluxboxmenu += menu.toFluxBox( tabs + 1 )
 
     if self.name.lower() == 'xfce':
-      if os.path.exists( os.path.expanduser( "~/.fluxbox/custom-menu" ) ):
+      if os.path.exists( os.path.expanduser( "~/.bbflux-custom-menu" ) ):
         fluxboxmenu += """\
   [nop]
-  [include] (~/.fluxbox/custom-menu)
+  [include] (~/.bbflux-custom-menu)
 """
     fluxboxmenu += '%s[end]\n' % ( '\t' * tabs )
 
