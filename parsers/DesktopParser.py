@@ -19,7 +19,7 @@
 # or write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 import os.path
-
+import syslog
 import codecs
 import re
 import os
@@ -91,6 +91,9 @@ class DesktopParser:
         # ok, we've found a [Desktop Entry] line, sate parser state accordingly
         if re.match( '^\[\s*Desktop\s+Entry\s*\]$', line, re.IGNORECASE ):
           self.state = DesktopParser.STATE_PARSING
+        # skip label lines
+        elif re.match( '^\[.+]$', line, re.IGNORECASE ):
+          continue
         # let's parse those bastards!
         elif self.state == DesktopParser.STATE_PARSING and '=' in line:
           ( label, value ) = line.split( '=', 1 )
@@ -127,15 +130,17 @@ class DesktopParser:
             pass
         # found something before a [Desktop Entry]
         else:
-          raise Exception( "Corrupted .desktop file '%s' on line %d" % ( self.filename, self.lineno ) )
+          syslog.syslog( syslog.LOG_ERR, "Corrupted .desktop file '%s' on line %d" % ( self.filename, self.lineno ) )
+          
     except UnicodeDecodeError as e:
       return None
     finally:
       self.fd.close()
       self.state = DesktopParser.STATE_NONE
 
-    return self.file
-
     missing = filter( lambda x:x not in collection, DesktopParser.MANDATORY_FIELDS )
     if missing != ():
-      raise Exception( "Missing mandatory fields : %s" % ', '.join(missing) )
+      syslog.syslog( syslog.LOG_ERR, "File '%s' missing mandatory fields : %s" % ( self.filename, ', '.join(missing) ) )
+      return None
+    else:
+      return self.file
