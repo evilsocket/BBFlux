@@ -80,7 +80,14 @@ if __name__ == "__main__":
       fd.close()
 
       print "@ Menu updated ."
-      
+    elif len(sys.argv) > 1 and sys.argv[1].lower() == 'kill':
+      if os.path.exists( BBFlux.PID_FILE ):
+        pid = file( BBFlux.PID_FILE, 'r' ).read().strip()
+        if( os.path.exists( '/proc/' + pid ) ):
+          os.kill( int(pid), signal.SIGKILL )
+          print "@ BBFlux daemong killed ."
+        else:
+          print "@ BBFlux is not running ."
     else:
 
       # check if there's another live instance running
