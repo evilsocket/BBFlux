@@ -80,11 +80,7 @@ class Menu:
     fluxboxmenu = ""
 
     if self.name.lower() == 'xfce':
-      fluxboxmenu += """\
-[begin] (fluxbox)'
-  [nop] (BackBox Linux)
-  [nop]
-"""
+      fluxboxmenu += "[begin] (BackBox Linux)\n"
     else:
       icon = IconParser.getInstance().getIconByName( self.icon )
       icon = '<%s>' % icon if icon is not None else ''
@@ -105,7 +101,7 @@ class Menu:
     if self.name.lower() == 'xfce':
       if os.path.exists( os.path.expanduser( "~/.bbflux-custom-menu" ) ):
         fluxboxmenu += """\
-  [nop]
+  [separator]
   [include] (~/.bbflux-custom-menu)
 """
     fluxboxmenu += '%s[end]\n' % ( '\t' * tabs )
