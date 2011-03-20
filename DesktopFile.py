@@ -20,6 +20,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 class DesktopFile:
   def __init__( self ):
+    self.filename     = ""
     self.type         = ""
     self.version      = ""
     self.encoding     = "UTF-8"
@@ -31,3 +32,4 @@ class DesktopFile:
     self.terminal     = False
     self.categories   = []
     self.mime_types   = []
+    self.nodisplay    = False

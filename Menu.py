@@ -19,6 +19,8 @@
 # or write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 import os
+import re
+
 from parsers.IconParser import IconParser
 
 class Menu:
@@ -29,6 +31,7 @@ class Menu:
     self.father   = None
     self.submenus = []
     self.programs = []
+    self.exclude  = []
     
   def setFather( self, menu ):
     self.father = menu
@@ -37,19 +40,32 @@ class Menu:
     self.submenus.append( menu )
 
   def findOwnerAndAdd( self, desktop ):
-
-    if self.name in desktop.categories:
-      self.programs.append( desktop )
-      return True
-    # special case, tnx to Raffaele messed up brain -.-
-    elif self.father != None and self.father.name == 'Services' and len(desktop.categories) > 0 and self.name in desktop.categories[0]:
-      self.programs.append( desktop )
-      return True
-    # same as before
-    elif self.name == 'Hacking' and desktop.categories[0] == u'BackBox':
-      self.programs.append( desktop )
-      return True
+    excluded = False
+    if desktop.filename in self.exclude:
+      excluded = True
     else:
+      for category in desktop.categories:
+        if category in self.exclude:
+          excluded = True
+          break
+
+    if not excluded:
+      if self.name in desktop.categories:
+        self.programs.append( desktop )
+        return True
+      # special case, tnx to Raffaele messed up brain -.-
+      elif self.father != None and self.father.name == 'Services' and len(desktop.categories) > 0 and self.name in desktop.categories[0]:
+        self.programs.append( desktop )
+        return True
+      # same as before
+      elif self.name == 'Hacking' and desktop.categories[0] == u'BackBox':
+        self.programs.append( desktop )
+        return True
+      else:
+        for menu in self.submenus:
+          if menu.findOwnerAndAdd( desktop ) is True:
+            return True
+    else:     
       for menu in self.submenus:
         if menu.findOwnerAndAdd( desktop ) is True:
           return True
@@ -83,6 +99,8 @@ class Menu:
       fluxboxmenu += "[begin] (BackBox Linux)\n"
     else:
       icon = IconParser.getInstance().getIconByName( self.icon )
+      if icon is not None and '.' not in icon:
+        icon = '%s.png' % icon
       icon = '<%s>' % icon if icon is not None else ''
 
       fluxboxmenu += '%s[submenu] (%s) %s\n' % ( '\t' * tabs, self.label, icon )
@@ -91,6 +109,11 @@ class Menu:
       command = program.command.replace( 'sh -c', 'xterm -e' )
       name    = program.name.replace('(','').replace(')','')
       icon    = IconParser.getInstance().getIconByName( program.icon )
+      if icon is None or re.match( '^.+\.(svg|ico)$', icon ):
+        icon  = IconParser.getInstance().getIconByName( 'applications-system' )
+        
+      if icon is not None and not re.match( '^.+\.[a-zA-Z0-9_]+$', icon ):
+        icon = '%s.png' % icon
       icon    = '<%s>' % icon if icon is not None else ''
       
       fluxboxmenu += '%s[exec] (%s) {%s} %s\n' % ( '\t' * (tabs + 1), name, command, icon )

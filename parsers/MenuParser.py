@@ -61,15 +61,29 @@ class MenuParser:
         return node.firstChild.nodeValue
     return None
 
+  def __getExcludedFiles( self, root ):
+    list  = []
+    nodes = root.childNodes
+    for child in nodes:
+      if child.nodeType == child.ELEMENT_NODE and child.tagName.lower() == 'exclude':
+        filenames = child.childNodes
+        for filename in filenames:
+          if filename.nodeType == filename.ELEMENT_NODE and (filename.tagName.lower() == 'filename' or filename.tagName.lower() == 'category'):
+            list.append( filename.firstChild.nodeValue )
+            
+    return list
+
   def __recurse( self, node, root ):
     nodes = node.childNodes
-
+    
     for node in nodes:
       if node.nodeType == node.ELEMENT_NODE and node.tagName == 'Menu':
         name      = self.__getChildData( node, 'Name' )
         directory = self.__getChildData( node, 'Directory' )
-        menu      = Menu()
-        menu.name = name
+        
+        menu         = Menu()
+        menu.name    = name
+        menu.exclude = self.__getExcludedFiles( node )
 
         if directory is not None:
           ( label, icon ) = self.__getDataFromDirectoryFile( directory )
@@ -88,12 +102,15 @@ class MenuParser:
         name      = self.__getChildData( node, 'Name' )
         directory = self.__getChildData( node, 'Directory' )      
 
-        self.root.name = name
+        self.root.name    = name
+        self.root.exclude = self.__getExcludedFiles( node )
 
         if directory is not None:
           ( label, icon ) = self.__getDataFromDirectoryFile( directory )
           self.root.label = label
           self.root.icon  = icon
+
+        
 
         self.__recurse( node, self.root )
 

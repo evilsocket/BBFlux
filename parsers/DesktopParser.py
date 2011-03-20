@@ -75,9 +75,10 @@ class DesktopParser:
       return None
 
     collection = []
-    
-    self.fd    = codecs.open( self.filename, "r", "utf-8" )
-    self.state = DesktopParser.STATE_INIT
+
+    ( dir, self.file.filename ) = os.path.split( self.filename )
+    self.fd                     = codecs.open( self.filename, "r", "utf-8" )
+    self.state                  = DesktopParser.STATE_INIT
 
     try:
       for line in self.fd.readlines():
@@ -120,11 +121,13 @@ class DesktopParser:
           elif label == 'icon':
             self.file.icon = value
           elif label == 'terminal':
-            self.file.terminal = self.__parse_bool(value)
+            self.file.terminal = self.__parse_bool( value )
           elif label == 'categories':
             self.file.categories = self.__parse_array( value, [ ';' ] )
           elif label == 'mimetype':
             self.file.mime_types = self.__parse_array( value, [ ';' ] )
+          elif label == 'nodisplay':
+            self.file.nodisplay = self.__parse_bool( value )
           # skip everything else
           else:
             pass

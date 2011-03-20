@@ -65,8 +65,8 @@ if __name__ == "__main__":
       for file in files:
         desktop = desktopparser.parse( file )
         if desktop is None:
-         print "@ File '%s' could not be parsed, corrupted content or encoding ." % file
-        else:
+          print "@ File '%s' could not be parsed, corrupted content or encoding ." % file
+        elif desktop.nodisplay is False:
           menu.findOwnerAndAdd(desktop)
 
         desktopparser.reset()

@@ -47,10 +47,17 @@ class IconParser:
       if os.path.exists( '/usr/share/pixmaps/' + name + '.png' ):
         self.cache[name] = '/usr/share/pixmaps/' + name + '.png'
         return '/usr/share/pixmaps/' + name + '.png'
+      elif os.path.exists( '/usr/share/pixmaps/' + name + '.xpm' ):
+        self.cache[name] = '/usr/share/pixmaps/' + name + '.xpm'
+        return '/usr/share/pixmaps/' + name + '.xpm'
       else:
         icon = self.__findIcon( '/usr/share/icons', name + '.png' )
         if icon is not None:
           self.cache[name] = icon
+        else:
+          icon = self.__findIcon( '/usr/share/icons', name + '.xpm' )
+          if icon is not None:
+            self.cache[name] = icon
 
         return icon
 
