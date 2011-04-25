@@ -35,24 +35,27 @@ class MenuParser:
     self.root   = Menu()
 
   def __getDataFromDirectoryFile( self, directory ):
-    name  = ""
-    icon  = ""
-    
-    fd    = codecs.open( "/usr/share/desktop-directories/" + directory, "r", "utf-8" )
-    lines = fd.readlines()
-    fd.close()
+    try:
+      name  = ""
+      icon  = ""
+      fd    = codecs.open( "/usr/share/desktop-directories/" + directory, "r", "utf-8" )
+      lines = fd.readlines()
+      fd.close()
 
-    for line in lines:
-      line = line.strip()
-      m    = re.match( '^Name\s*=\s*(.+)$', line )
-      if m:
-        name = m.group(1)
-      else:
-        m = re.match( '^Icon\s*=\s*(.+)$', line )
+      for line in lines:
+        line = line.strip()
+        m    = re.match( '^Name\s*=\s*(.+)$', line )
         if m:
-          icon = m.group(1)
+          name = m.group(1)
+        else:
+          m = re.match( '^Icon\s*=\s*(.+)$', line )
+          if m:
+            icon = m.group(1)
 
-    return ( name, icon )
+      return ( name, icon )
+    
+    except:
+      return ( None, None )      
 
   def __getChildData( self, node, name ):
     nodes = node.childNodes
@@ -87,10 +90,11 @@ class MenuParser:
 
         if directory is not None:
           ( label, icon ) = self.__getDataFromDirectoryFile( directory )
-          menu.label = label
-          menu.icon  = icon
-          menu.setFather(root)
-          root.addSubMenu(menu)
+          if label is not None:
+            menu.label = label
+            menu.icon  = icon
+            menu.setFather(root)
+            root.addSubMenu(menu)
 
         self.__recurse( node, menu )
 

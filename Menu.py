@@ -104,7 +104,10 @@ class Menu:
       icon = '<%s>' % icon if icon is not None else ''
 
       fluxboxmenu += '%s[submenu] (%s) %s\n' % ( '\t' * tabs, self.label, icon )
-      
+
+    # Sort programs by name
+    self.programs.sort( lambda a, b: cmp( a.name.lower(), b.name.lower() ) )
+
     for program in self.programs:
       command = program.command.replace( 'sh -c', 'xterm -e' )
       name    = program.name.replace('(','').replace(')','')
@@ -117,6 +120,9 @@ class Menu:
       icon    = '<%s>' % icon if icon is not None else ''
       
       fluxboxmenu += '%s[exec] (%s) {%s} %s\n' % ( '\t' * (tabs + 1), name, command, icon )
+
+    # Sort sub menus by name as well
+    self.submenus.sort( lambda a, b: cmp( a.label.lower(), b.label.lower() ) )
 
     for menu in self.submenus:
       fluxboxmenu += menu.toFluxBox( tabs + 1 )
